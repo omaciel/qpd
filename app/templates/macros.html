@@ -1,0 +1,15 @@
+{% macro run_cell(value, hl) %}
+    <td{% if hl %} class="warning"{% endif %}>{{ value }}</td>
+{% endmacro %}
+
+{% macro run_row(run) %}
+    <tr>
+        <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
+        <td>{{ run.operatingsystem.name }}</td>
+        {{ run_cell(run.passed, False) }}
+        {{ run_cell(run.failed, run.failed > 0) }}
+        {{ run_cell(run.skipped, False) }}
+        {{ run_cell(run.error, run.error > 0) }}
+        <td>{{ run.total }}</td>
+    </tr>
+{% endmacro %}
