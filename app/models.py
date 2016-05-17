@@ -52,6 +52,7 @@ class TestRun(db.Model):
     __tablename__ = 'testruns'
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), index=True)
     timestamp = db.Column(db.DateTime)
     waved = db.Column(db.Boolean)
     operatingsystem_id = db.Column(
@@ -73,7 +74,9 @@ class TestRun(db.Model):
 
     def __init__(
             self, passed, failed, skipped, error, operatingsystem_id,
-            timestamp=None, waved=None):
+            name=None, timestamp=None, waved=None):
+        self.name = name or datetime.datetime.now().strftime(
+            '%Y-%m-%d %H:%M:%S')
         self.passed = passed
         self.failed = failed
         self.skipped = skipped
@@ -83,26 +86,25 @@ class TestRun(db.Model):
                 id=operatingsystem_id).first() is not None:
             self.operatingsystem_id = operatingsystem_id
 
-        if timestamp is None:
-            self.timestamp = datetime.datetime.now()
+        self.timestamp = timestamp or datetime.datetime.now()
         if waved is None:
             self.waved = False
 
         self.total = sum([self.passed, self.failed, self.skipped, self.error])
         self.total_executed = sum([self.passed, self.failed])
         self.percent_passed = (
-            self.passed / self.total_executed
+            (self.passed / self.total_executed) * 100
             if self.total_executed > 0
             else 0
         )
         self.percent_failed = (
-            self.failed / self.total_executed
+            (self.failed / self.total_executed) * 100
             if self.total_executed > 0
             else 0)
         self.percent_executed = (
-            self.total_executed / self.total if self.total > 0 else 0)
+            (self.total_executed / self.total) * 100 if self.total > 0 else 0)
         self.percent_not_executed = (
-            self.skipped / self.total if self.total > 0 else 0)
+            (self.skipped / self.total) * 100 if self.total > 0 else 0)
 
 
 class TestType(db.Model):

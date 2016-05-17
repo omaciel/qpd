@@ -8,6 +8,7 @@
 
     <table class="table table-hover">
         <tr>
+            <th>Build</th>
             <th>Date</th>
             <th>Operating System</th>
             <th>Passed</th>
@@ -15,6 +16,11 @@
             <th>Skipped</th>
             <th>Error</th>
             <th>Total</th>
+            <th>Total Executed</th>
+            <th>% Passed</th>
+            <th>% Failed</th>
+            <th>% Executed</th>
+            <th>% Not Executed</th>
         </tr>
         {% for run in runs %}
             {{ macros.run_row(run) }}

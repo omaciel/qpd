@@ -4,12 +4,18 @@
 
 {% macro run_row(run) %}
     <tr>
+        <td>{{ run.name }}</td>
         <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
-        <td>{{ run.operatingsystem.name }}</td>
+        <td>{{ run.operatingsystem.name }} {{ run.operatingsystem.major_version }}.{{ run.operatingsystem.minor_version }}</td>
         {{ run_cell(run.passed, False) }}
         {{ run_cell(run.failed, run.failed > 0) }}
         {{ run_cell(run.skipped, False) }}
         {{ run_cell(run.error, run.error > 0) }}
         <td>{{ run.total }}</td>
+        <td>{{ run.total_executed }}</td>
+        <td>{{ run.percent_passed|round(2) }}</td>
+        <td>{{ run.percent_failed|round(2) }}</td>
+        <td>{{ run.percent_executed|round(2) }}</td>
+        <td>{{ run.percent_not_executed|round(2) }}</td>
     </tr>
 {% endmacro %}
