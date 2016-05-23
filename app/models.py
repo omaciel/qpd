@@ -59,7 +59,7 @@ class TestRun(db.Model):
         db.Integer, db.ForeignKey('operatingsystems.id'))
     operatingsystem = db.relationship(
         'OperatingSystem',
-        backref=db.backref('operatingsystems', lazy='dynamic'),
+        backref=db.backref('testruns', lazy='dynamic'),
     )
     passed = db.Column(db.Integer)
     failed = db.Column(db.Integer)
@@ -67,14 +67,15 @@ class TestRun(db.Model):
     error = db.Column(db.Integer)
     total = db.Column(db.Integer)
     total_executed = db.Column(db.Integer)
-    percent_passed = db.Column(db.Integer)
-    percent_failed = db.Column(db.Integer)
-    percent_executed = db.Column(db.Integer)
-    percent_not_executed = db.Column(db.Integer)
+    percent_passed = db.Column(db.Float)
+    percent_failed = db.Column(db.Float)
+    percent_executed = db.Column(db.Float)
+    percent_not_executed = db.Column(db.Float)
+    notes = db.Column(db.Text)
 
     def __init__(
             self, passed, failed, skipped, error, operatingsystem_id,
-            name=None, timestamp=None, waved=None):
+            name=None, timestamp=None, waved=None, notes=None):
         self.name = name or datetime.datetime.now().strftime(
             '%Y-%m-%d %H:%M:%S')
         self.passed = passed
@@ -86,9 +87,10 @@ class TestRun(db.Model):
                 id=operatingsystem_id).first() is not None:
             self.operatingsystem_id = operatingsystem_id
 
-        self.timestamp = timestamp or datetime.datetime.now()
+        self.timestamp = timestamp or datetime.datetime.utcnow()
         if waved is None:
             self.waved = False
+        self.notes = notes
 
         self.total = sum([self.passed, self.failed, self.skipped, self.error])
         self.total_executed = sum([self.passed, self.failed])
@@ -145,11 +147,6 @@ class OperatingSystem(db.Model):
     name = db.Column(db.String(16), index=True)
     major_version = db.Column(db.Integer)
     minor_version = db.Column(db.Integer)
-
-    def __init__(self, name, major=None, minor=None):
-        self.name = name
-        self.major_version = major or 0
-        self.minor_version = minor or 0
 
     def __repr__(self):
         return '<Operating System {0} {1}.{2}>'.format(
