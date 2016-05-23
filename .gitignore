@@ -62,4 +62,5 @@ target/
 .ipynb_checkpoints
 
 # sqlite
-*.sqlite3.DS_Store
+*.sqlite3
+.DS_Store
