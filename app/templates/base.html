@@ -6,13 +6,12 @@
 {% block navbar %}
     <nav class="navbar navbar-inverse" role="navigation">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+            <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">
                 QPD
             </a>
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('main.index') }}">Home</a></li>
-                <li><a href="{{ url_for('main.operatingsystems') }}">Operating Systems</a></li>
-                <li><a href="{{ url_for('main.index') }}admin">Admin</a></li>
+                <li><a href="{{ url_for('dashboard.index') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard.operatingsystems') }}">Operating Systems</a></li>
             </ul>>
         </div>
     </nav>

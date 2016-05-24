@@ -1,26 +1,21 @@
 import os
+
 from flask import Flask
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy
 
-bootstrap = Bootstrap()
-db = SQLAlchemy()
 
+app = Flask(__name__)
 
-def create_app(config_name):
-    """Create an application instance."""
-    app = Flask(__name__)
+config_name = os.environ.get('FLASK_CONFIG') or 'development'
+cfg = os.path.join(os.getcwd(), 'config', config_name + '.py')
+app.config.from_pyfile(cfg)
 
-    # import configuration
-    cfg = os.path.join(os.getcwd(), 'config', config_name + '.py')
-    app.config.from_pyfile(cfg)
+# initialize extensions
+bootstrap = Bootstrap(app)
+db = SQLAlchemy(app)
 
-    # initialize extensions
-    bootstrap.init_app(app)
-    db.init_app(app)
+# import blueprints
+from app.dashboard.views import dashboard_blueprint
 
-    # import blueprints
-    from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint)
-
-    return app
+app.register_blueprint(dashboard_blueprint)
