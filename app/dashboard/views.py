@@ -23,7 +23,8 @@ def index():
 
     rows.reverse()
 
-    releases = Release.query.filter().order_by(Release.name.asc())
+    releases = Release.query.join(TestRun).filter().order_by(
+        Release.name.asc())
 
     return render_template(
         'index.html', runs=json.dumps(rows), releases=releases)

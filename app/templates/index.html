@@ -4,4 +4,20 @@
 {% block page_content %}
     <h1>Latest Test Runs</h1>
     {{ macros.chart('foo', runs) }}
+
+    <h1>Releases</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for release in releases %}
+        <tr>
+          <td>{{ release.name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 {% endblock %}
