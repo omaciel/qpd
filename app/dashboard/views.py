@@ -1,6 +1,8 @@
-from app.models import OperatingSystem, TestRun
-from flask import abort, render_template
+from app.models import OperatingSystem, Release, TestRun
+from flask import render_template
 from flask import Blueprint
+
+import json
 
 
 dashboard_blueprint = Blueprint(
@@ -13,34 +15,18 @@ dashboard_blueprint = Blueprint(
 def index():
     test_runs = TestRun.query.join(
         OperatingSystem).filter().order_by(
-            TestRun.timestamp.desc(), OperatingSystem.major_version.desc())
-    return render_template('index.html', runs=test_runs)
+            TestRun.timestamp.desc(), OperatingSystem.major_version.desc()
+        ).limit(25)
+    rows = []
+    for row in test_runs:
+        rows.append([row.name, row.passed, row.failed, row.skipped])
 
+    rows.reverse()
 
-@dashboard_blueprint.route('/operatingsystems/', methods=['GET', ])
-def operatingsystems():
-    oses = OperatingSystem.query.order_by(
-        OperatingSystem.name.desc(), OperatingSystem.major_version.desc())
-    return render_template('operatingsystems.html', oses=oses)
-
-
-@dashboard_blueprint.route('/operatingsystems/<int:id>', methods=['GET', ])
-def operatingsystem(id):
-    operatingsystem = OperatingSystem.query.filter_by(id=id).first()
-    if operatingsystem is None:
-        abort(404)
-    test_runs = TestRun.query.join(
-        OperatingSystem).filter_by(id=operatingsystem.id).order_by(
-            TestRun.timestamp.desc(), OperatingSystem.major_version.desc())
+    releases = Release.query.filter().order_by(Release.name.asc())
 
     return render_template(
-        'operatingsystem.html',
-        name='{0} {1}'.format(
-            operatingsystem.name,
-            operatingsystem.major_version,
-        ),
-        runs=test_runs
-    )
+        'index.html', runs=json.dumps(rows), releases=releases)
 
 
 @dashboard_blueprint.app_errorhandler(404)

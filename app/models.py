@@ -28,6 +28,23 @@ class Issue(db.Model):
         return '<Issue {0}>'.format(self.number)
 
 
+class Project(db.Model):
+    __tablename__ = 'projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), index=True, unique=True)
+
+    def __repr__(self):
+        return '<Project {0}>'.format(self.name)
+
+
+class Release(db.Model):
+    __tablename__ = 'releases'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), index=True, unique=True)
+
+
 class TestCase(db.Model):
     __tablename__ = 'testcases'
 
@@ -61,6 +78,19 @@ class TestRun(db.Model):
         'OperatingSystem',
         backref=db.backref('testruns', lazy='dynamic'),
     )
+    project_id = db.Column(
+        db.Integer, db.ForeignKey('projects.id'))
+    project = db.relationship(
+        'Project',
+        backref=db.backref('testruns', lazy='dynamic'),
+    )
+    release_id = db.Column(
+        db.Integer, db.ForeignKey('releases.id'))
+    project = db.relationship(
+        'Release',
+        backref=db.backref('testruns', lazy='dynamic'),
+    )
+
     passed = db.Column(db.Integer)
     failed = db.Column(db.Integer)
     skipped = db.Column(db.Integer)
@@ -75,7 +105,8 @@ class TestRun(db.Model):
 
     def __init__(
             self, passed, failed, skipped, error, operatingsystem_id,
-            name=None, timestamp=None, waved=None, notes=None):
+            project_id, release_id, name=None, timestamp=None, waved=None,
+            notes=None):
         self.name = name or datetime.datetime.now().strftime(
             '%Y-%m-%d %H:%M:%S')
         self.passed = passed
@@ -83,6 +114,12 @@ class TestRun(db.Model):
         self.skipped = skipped
         self.error = error
 
+        if Release.query.filter_by(
+                id=release_id).first() is not None:
+            self.release_id = release_id
+        if Project.query.filter_by(
+                id=project_id).first() is not None:
+            self.project_id = project_id
         if OperatingSystem.query.filter_by(
                 id=operatingsystem_id).first() is not None:
             self.operatingsystem_id = operatingsystem_id

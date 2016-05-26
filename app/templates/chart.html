@@ -1,0 +1,41 @@
+{% macro chart(id, rows) %}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div id="{{ id }}"></div>
+
+<script type='text/javascript'>//<![CDATA[
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawLineColors);
+
+function drawLineColors() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'X');
+      data.addColumn('number', 'Passed');
+      data.addColumn('number', 'Failed');
+      data.addColumn('number', 'Skipped');
+
+      data.addRows({{ rows|safe }});
+
+var options = {
+        title: 'Automation Results',
+        width: "50%",
+        height: 400,
+
+        hAxis: {
+          title: 'Build'
+        },
+        vAxis: {
+          title: '# Automated Tests'
+        },
+        colors: ['#00FF00', '#FF0000', '#0000FF']
+      };
+
+      var chart = new
+      google.visualization.LineChart(document.getElementById('{{ id }}'));
+      chart.draw(data, options);
+    }
+
+//]]>
+
+</script>
+{% endmacro %}

@@ -1,7 +1,4 @@
 {% extends "base.html" %}
-{% import 'macros.html' as macros %}
-
-{% block title %}Quality Product Data{% endblock %}
 
 {% block page_content %}
     <h1>Operating Systems</h1>
@@ -12,11 +9,10 @@
         </tr>
         {% for os in oses %}
         <tr>
-          <td><a href="{{ url_for('dashboard.operatingsystem', id=os.id)  }}">
+          <td><a href="{{ url_for('operatingsystem.operatingsystem', id=os.id)  }}">
             {{ os.name }} {{ os.major_version }}.{{ os.minor_version }}
           </a></td>
         </tr>
         {% endfor %}
     </table>
-
 {% endblock %}

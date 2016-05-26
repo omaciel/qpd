@@ -2,8 +2,10 @@
     <td{% if hl %} class="warning"{% endif %}>{{ value }}</td>
 {% endmacro %}
 
-{% macro run_row(run) %}
-    <tr>
+    <tbody>
+      {% macro run_row(run) %}
+      <tr>
+        <td>{{ run.project.name }}</td>
         <td>{{ run.name }}</td>
         <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
         <td>{{ run.operatingsystem.name }} {{ run.operatingsystem.major_version }}.{{ run.operatingsystem.minor_version }}</td>
@@ -17,5 +19,6 @@
         <td>{{ run.percent_failed|round(2) }}</td>
         <td>{{ run.percent_executed|round(2) }}</td>
         <td>{{ run.percent_not_executed|round(2) }}</td>
-    </tr>
-{% endmacro %}
+      </tr>
+      {% endmacro %}
+    </tbody>

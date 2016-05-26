@@ -1,5 +1,6 @@
 {% extends "bootstrap/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
+{% block extrajs %}{% endblock %}
 
 {% block title %}Quality Product Data{% endblock %}
 
@@ -11,7 +12,9 @@
             </a>
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('dashboard.index') }}">Home</a></li>
-                <li><a href="{{ url_for('dashboard.operatingsystems') }}">Operating Systems</a></li>
+                <li><a href="{{ url_for('operatingsystem.index') }}">Operating Systems</a></li>
+                <li><a href="{{ url_for('project.index') }}">Projectss</a></li>
+                <li><a href="{{ url_for('testrun.index') }}">Test Runs</a></li>
             </ul>>
         </div>
     </nav>
