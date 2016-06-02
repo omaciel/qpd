@@ -86,7 +86,7 @@ class TestRun(db.Model):
     )
     release_id = db.Column(
         db.Integer, db.ForeignKey('releases.id'))
-    project = db.relationship(
+    release = db.relationship(
         'Release',
         backref=db.backref('testruns', lazy='dynamic'),
     )
@@ -187,6 +187,13 @@ class OperatingSystem(db.Model):
 
     def __repr__(self):
         return '<Operating System {0} {1}.{2}>'.format(
+            self.name,
+            self.major_version,
+            self.minor_version,
+        )
+
+    def fullname(self):
+        return '{0} {1}.{2}'.format(
             self.name,
             self.major_version,
             self.minor_version,

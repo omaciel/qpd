@@ -16,20 +16,15 @@ def index():
     test_runs = TestRun.query.join(
         OperatingSystem).filter().order_by(
             TestRun.timestamp.desc(), OperatingSystem.major_version.desc()
-        ).limit(25)
+        ).limit(10)
     rows = []
     for row in test_runs:
         rows.append([row.name, row.passed, row.failed, row.skipped])
 
     rows.reverse()
 
-    releases = Release.query.join(TestRun).filter().order_by(
-        TestRun.timestamp.desc(),
-        TestRun.name.desc(),
-    ).limit(25)
-
     return render_template(
-        'index.html', runs=json.dumps(rows), releases=releases)
+        'index.html', data=json.dumps(rows), test_runs=test_runs)
 
 
 @dashboard_blueprint.app_errorhandler(404)

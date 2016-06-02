@@ -1,24 +1,96 @@
-{% macro run_cell(value, hl) %}
-    <td{% if hl %} class="warning"{% endif %}>{{ value }}</td>
+{% macro chart(id, rows) %}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div id="{{ id }}"></div>
+
+<script type='text/javascript'>//<![CDATA[
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawLineColors);
+
+function drawLineColors() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'X');
+      data.addColumn('number', 'Passed');
+      data.addColumn('number', 'Failed');
+      data.addColumn('number', 'Skipped');
+
+      data.addRows({{ rows|safe }});
+
+var options = {
+        title: 'Automation Results',
+        width: "50%",
+        height: 400,
+
+        hAxis: {
+          title: 'Build'
+        },
+        vAxis: {
+          title: '# Automated Tests'
+        },
+        colors: ['#00FF00', '#FF0000', '#0000FF']
+      };
+
+      var chart = new
+      google.visualization.LineChart(document.getElementById('{{ id }}'));
+      chart.draw(data, options);
+    }
+
+//]]>
+
+</script>
 {% endmacro %}
 
-    <tbody>
-      {% macro run_row(run) %}
-      <tr>
-        <td>{{ run.project.name }}</td>
-        <td>{{ run.name }}</td>
-        <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
-        <td>{{ run.operatingsystem.name }} {{ run.operatingsystem.major_version }}.{{ run.operatingsystem.minor_version }}</td>
-        {{ run_cell(run.passed, False) }}
-        {{ run_cell(run.failed, run.failed > 0) }}
-        {{ run_cell(run.skipped, False) }}
-        {{ run_cell(run.error, run.error > 0) }}
-        <td>{{ run.total }}</td>
-        <td>{{ run.total_executed }}</td>
-        <td>{{ run.percent_passed|round(2) }}</td>
-        <td>{{ run.percent_failed|round(2) }}</td>
-        <td>{{ run.percent_executed|round(2) }}</td>
-        <td>{{ run.percent_not_executed|round(2) }}</td>
-      </tr>
-      {% endmacro %}
-    </tbody>
+
+{% macro run_cell(value, hl) %}
+    <td{% if hl %} class="success"{% endif %}>{{ value }}</td>
+{% endmacro %}
+
+
+{% macro testrun_table(test_runs, all) %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Project</th>
+      <th>Release</th>
+      <th>Build</th>
+      <th>OS</th>
+      {% if all %}
+      <th>Passed</th>
+      <th>Failed</th>
+      <th>Skipped</th>
+      <th>Error</th>
+      <th>Total</th>
+      <th>Total Executed</th>
+      {% endif %}
+      <th>% Passed</th>
+      <th>% Failed</th>
+      <th>% Executed</th>
+      <th>% Not Executed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for run in test_runs %}
+    <tr>
+      <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
+      <td>{{ run.project.name }}</td>
+      <td>{{ run.release.name }}</td>
+      <td>{{ run.name }}</td>
+      <td>{{ run.operatingsystem.fullname() }}</td>
+      {% if all %}
+      <td>{{ run.passed }}</td>
+      <td>{{ run.failed }}</td>
+      <td>{{ run.skipped }}</td>
+      <td>{{ run.error }}</td>
+      <td>{{ run.total }}</td>
+      <td>{{ run.total_executed }}</td>
+      {% endif %}
+      {{ run_cell(run.percent_passed|round(2), run.percent_passed >= 90) }}
+      <td>{{ run.percent_failed|round(2) }}</td>
+      <td>{{ run.percent_executed|round(2) }}</td>
+      <td>{{ run.percent_not_executed|round(2) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
