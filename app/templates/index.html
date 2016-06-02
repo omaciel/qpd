@@ -2,22 +2,44 @@
 {% import 'chart.html' as macros %}
 
 {% block page_content %}
+<div>
+  <div>
     <h1>Latest Test Runs</h1>
     {{ macros.chart('foo', runs) }}
-
+  </div>
     <h1>Releases</h1>
-    <table>
+    <table class="table table-hover">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Date</th>
+          <th>Release</th>
+          <th>Build</th>
+          <th>OS</th>
+          <th>% Passed</th>
+          <th>% Failed</th>
+          <th>% Executed</th>
+          <th>% Not Executed</th>
         </tr>
       </thead>
       <tbody>
         {% for release in releases %}
+        {% for testrun in release.testruns %}
         <tr>
+          <td>{{ testrun.timestamp.strftime('%Y-%m-%d') }}</td>
           <td>{{ release.name }}</td>
+          <td>{{ testrun.name }}</td>
+          <td>{{ testrun.operatingsystem.name }} {{ testrun.operatingsystem.major_version }}.{{ testrun.operatingsystem.minor_version }}</td>
+          <td>{{ testrun.percent_passed|round(2) }}</td>
+          <td>{{ testrun.percent_failed|round(2) }}</td>
+          <td>{{ testrun.percent_executed|round(2) }}</td>
+          <td>{{ testrun.percent_not_executed|round(2) }}</td>
         </tr>
+        {% endfor %}
         {% endfor %}
       </tbody>
     </table>
+  <div>
+  </div>
+</div>
+
 {% endblock %}

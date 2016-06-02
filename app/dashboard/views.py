@@ -24,7 +24,9 @@ def index():
     rows.reverse()
 
     releases = Release.query.join(TestRun).filter().order_by(
-        Release.name.asc())
+        TestRun.timestamp.desc(),
+        TestRun.name.desc(),
+    ).limit(25)
 
     return render_template(
         'index.html', runs=json.dumps(rows), releases=releases)
