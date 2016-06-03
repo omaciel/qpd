@@ -2,11 +2,12 @@
 {% import 'macros.html' as macros %}
 
 {% block page_content %}
+{{ macros.load_chart() }}
+
 <div>
   <div>
     <h1>Latest Test Runs</h1>
     {{ macros.chart('runs-chart', data) }}
-  </div>
   <div>
     <h1>Releases</h1>
     {{ macros.testrun_table(test_runs) }}
