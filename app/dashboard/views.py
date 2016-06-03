@@ -1,5 +1,5 @@
 from app.models import OperatingSystem, Release, TestRun
-from flask import render_template
+from flask import render_template, request
 from flask import Blueprint
 
 import json
@@ -11,12 +11,14 @@ dashboard_blueprint = Blueprint(
 )
 
 
-@dashboard_blueprint.route('/')
+@dashboard_blueprint.route('/', methods=['GET', ])
 def index():
-    test_runs = TestRun.query.join(
+    # How many items?
+    items = request.args.get('items', 10)
+    test_runs = TestRun.query.filter_by(waved=False).join(
         OperatingSystem).filter().order_by(
             TestRun.timestamp.desc(), OperatingSystem.major_version.desc()
-        ).limit(10)
+        ).limit(items)
     rows = []
     for row in test_runs:
         rows.append([row.name, row.passed, row.failed, row.skipped])
