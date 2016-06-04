@@ -9,7 +9,7 @@ project_blueprint = Blueprint(
 )
 
 
-@project_blueprint.route('/projects/')
+@project_blueprint.route('/projects/', methods=['GET', ])
 def index():
     projects = Project.query.order_by(Project.name.asc())
     return render_template('projects.html', projects=projects)
