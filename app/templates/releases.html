@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+    <h1>Releases</h1>
+
+    <table class="table table-hover">
+        <tr>
+            <th>Name</th>
+        </tr>
+        {% for row in rows %}
+        <tr>
+          <td><a href="{{ url_for('release.release', id=row.id)  }}">
+            {{ row.name }}
+          </a></td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

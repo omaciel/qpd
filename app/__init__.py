@@ -19,9 +19,11 @@ db = SQLAlchemy(app)
 from app.dashboard.views import dashboard_blueprint
 from app.operatingsystem.views import os_blueprint
 from app.project.views import project_blueprint
+from app.release.views import release_blueprint
 from app.testrun.views import run_blueprint
 
-app.register_blueprint(dashboard_blueprint, url_prefix='/')
-app.register_blueprint(os_blueprint, url_prefix='/operatingsystems')
-app.register_blueprint(project_blueprint, url_prefix='/projects')
-app.register_blueprint(run_blueprint, url_prefix='/testruns')
+app.register_blueprint(dashboard_blueprint)
+app.register_blueprint(os_blueprint)
+app.register_blueprint(project_blueprint)
+app.register_blueprint(release_blueprint)
+app.register_blueprint(run_blueprint)
