@@ -27,10 +27,7 @@ def operatingsystem(id):
 
     return render_template(
         'operatingsystem.html',
-        name='{0} {1}'.format(
-            operatingsystem.name,
-            operatingsystem.major_version,
-        ),
+        name=operatingsystem.fullname(),
         runs=test_runs
     )
 
