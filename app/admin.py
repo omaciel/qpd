@@ -8,7 +8,7 @@ admin = Admin(name='QPD', template_mode='bootstrap3')
 
 
 class TestRunView(ModelView):
-    column_exclude_list = [
+    form_excluded_columns = [
         'total',
         'total_executed',
         'percent_passed',
@@ -17,8 +17,12 @@ class TestRunView(ModelView):
         'percent_not_executed',
     ]
 
+    def after_model_change(self, form, model, is_created):
+        model.update_stats()
+        self.session.commit()
+
 
 def configure_admin(app, db):
     admin.init_app(app)
     # Admin pages
-    admin.add_view(TestRunView(TestRun, db.session, endpoint='/admin/testrun'))
+    admin.add_view(TestRunView(TestRun, db.session, endpoint='testruns'))

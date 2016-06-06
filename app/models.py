@@ -72,7 +72,7 @@ class TestRun(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), index=True)
-    timestamp = db.Column(db.DateTime)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     waved = db.Column(db.Boolean)
     operatingsystem_id = db.Column(
         db.Integer, db.ForeignKey('operatingsystems.id'))
@@ -105,49 +105,23 @@ class TestRun(db.Model):
     percent_not_executed = db.Column(db.Float)
     notes = db.Column(db.Text)
 
-    def __init__(
-            self, passed, failed, skipped, error, operatingsystem_id,
-            project_id, release_id, name=None, timestamp=None, waved=None,
-            notes=None):
-        self.name = name or datetime.datetime.now().strftime(
-            '%Y-%m-%d %H:%M:%S')
-        self.passed = passed
-        self.failed = failed
-        self.skipped = skipped
-        self.error = error
-
-        if Release.query.filter_by(
-                id=release_id).first() is not None:
-            self.release_id = release_id
-        if Project.query.filter_by(
-                id=project_id).first() is not None:
-            self.project_id = project_id
-        if OperatingSystem.query.filter_by(
-                id=operatingsystem_id).first() is not None:
-            self.operatingsystem_id = operatingsystem_id
-
-        self.timestamp = timestamp or datetime.datetime.utcnow()
-        if waved is None:
-            self.waved = False
-        self.notes = notes
-        self.update_stats()
-
     def update_stats(self):
         self.total = sum([self.passed, self.failed, self.skipped, self.error])
         self.total_executed = sum([self.passed, self.failed])
         self.percent_passed = (
-            (self.passed / self.total_executed) * 100
+            (self.passed / float(self.total_executed)) * 100
             if self.total_executed > 0
-            else 0
-        )
+            else 0)
         self.percent_failed = (
-            (self.failed / self.total_executed) * 100
+            (self.failed / float(self.total_executed)) * 100
             if self.total_executed > 0
             else 0)
         self.percent_executed = (
-            (self.total_executed / self.total) * 100 if self.total > 0 else 0)
+            (self.total_executed / float(self.total)) * 100
+            if self.total > 0
+            else 0)
         self.percent_not_executed = (
-            (self.skipped / self.total) * 100 if self.total > 0 else 0)
+            (self.skipped / float(self.total)) * 100 if self.total > 0 else 0)
 
 
 class TestType(db.Model):
