@@ -1,6 +1,5 @@
-from app import db
-
 import datetime
+from app.db import db
 
 
 class Category(db.Model):
@@ -43,6 +42,9 @@ class Release(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), index=True, unique=True)
+
+    def __repr__(self):
+        return '<Release {0}>'.format(self.name)
 
 
 class TestCase(db.Model):
@@ -128,7 +130,9 @@ class TestRun(db.Model):
         if waved is None:
             self.waved = False
         self.notes = notes
+        self.update_stats()
 
+    def update_stats(self):
         self.total = sum([self.passed, self.failed, self.skipped, self.error])
         self.total_executed = sum([self.passed, self.failed])
         self.percent_passed = (
