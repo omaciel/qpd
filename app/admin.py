@@ -2,7 +2,7 @@
 
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin
-from models import OperatingSystem, Project, Release, TestRun
+from app.models import OperatingSystem, Project, Release, TestRun
 
 admin = Admin(name='QPD', template_mode='bootstrap3')
 
