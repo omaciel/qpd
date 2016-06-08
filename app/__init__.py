@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from flask.ext.bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap
 from app.admin import configure_admin
 from app.db import db
 
