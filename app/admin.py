@@ -17,6 +17,9 @@ class TestRunView(ModelView):
         'percent_not_executed',
     ]
 
+    column_editable_list = ['name', 'release', 'operatingsystem', 'project']
+    column_filters = ['name', 'project', 'release']
+
     def after_model_change(self, form, model, is_created):
         model.update_stats()
         self.session.commit()
