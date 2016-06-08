@@ -25,4 +25,8 @@ class TestRunView(ModelView):
 def configure_admin(app, db):
     admin.init_app(app)
     # Admin pages
+    admin.add_view(
+        ModelView(OperatingSystem, db.session, endpoint='operatingsystems'))
+    admin.add_view(ModelView(Project, db.session, endpoint='projects'))
+    admin.add_view(ModelView(Release, db.session, endpoint='releases'))
     admin.add_view(TestRunView(TestRun, db.session, endpoint='testruns'))
