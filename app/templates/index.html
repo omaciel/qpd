@@ -12,7 +12,18 @@
     </div>
     <div class="col-md-6">
       <h1>Latest Test Runs</h1>
-      {{ macros.chart('runs-chart', data) }}
+      <ul class="nav nav-pills">
+        <li class="active"><a data-toggle="pill" href="#line">Line Chart</a></li>
+        <li><a data-toggle="pill" href="#bar">Bar Chart</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="line" class="tab-pane fade in active">
+          {{ macros.chart('runs-chart', 'line', data) }}
+        </div>
+        <div id="bar" class="tab-pane fade active">
+          {{ macros.chart('runs-chart-bar', 'other', data) }}
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@ google.charts.load('current', {packages: ['corechart', 'line']});
 
 {% endmacro %}
 
-{% macro chart(id, rows) %}
+{% macro chart(id, type, rows) %}
 <div id="{{ id }}"></div>
 <script type='text/javascript'>//<![CDATA[
 google.charts.setOnLoadCallback(drawLineColors);
@@ -25,9 +25,8 @@ function drawLineColors() {
 
 var options = {
         title: 'Automation Results',
-        width: "50%",
+        isStacked: true,
         height: 400,
-
         hAxis: {
           title: 'Build'
         },
@@ -41,8 +40,17 @@ var options = {
         },
       };
 
-      var chart = new
-      google.visualization.LineChart(document.getElementById('{{ id }}'));
+      if('{{ type }}' == 'line'){
+        var chart = new google.visualization.LineChart(
+          document.getElementById('{{ id }}')
+        );
+      }
+      else{
+        var chart = new google.visualization.ColumnChart(
+          document.getElementById('{{ id }}')
+        );
+
+      }
       chart.draw(data, options);
     }
 
