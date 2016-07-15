@@ -72,7 +72,7 @@ class TestRun(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), index=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    timestamp = db.Column(db.DateTime, default=datetime.date.today())
     waved = db.Column(db.Boolean)
     operatingsystem_id = db.Column(
         db.Integer, db.ForeignKey('operatingsystems.id'))
