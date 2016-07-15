@@ -17,7 +17,9 @@ def index():
     items = request.args.get('items', 10)
     test_runs = TestRun.query.filter_by(waved=False).join(
         OperatingSystem).filter().order_by(
-            TestRun.timestamp.desc(), OperatingSystem.major_version.desc()
+            TestRun.timestamp.desc(),
+            TestRun.name.desc(),
+            OperatingSystem.major_version.desc()
         ).limit(items)
     rows = []
     for row in test_runs:
