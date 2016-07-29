@@ -18,7 +18,11 @@ def index():
 @release_blueprint.route('/releases/<int:id>', methods=['GET', ])
 def release(id):
     release = Release.query.filter_by(id=id).first()
-    test_runs = TestRun.query.filter_by(release=release).join(
-        OperatingSystem).filter().order_by(
-            TestRun.timestamp.desc(), OperatingSystem.major_version.desc())
+    test_runs = TestRun.query.filter_by(
+        release=release
+    ).join(OperatingSystem).filter().order_by(
+        TestRun.timestamp.desc(),
+        TestRun.name.desc(),
+        OperatingSystem.major_version.desc()
+    )
     return render_template('release.html', release=release, rows=test_runs)

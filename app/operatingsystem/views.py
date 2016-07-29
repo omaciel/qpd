@@ -12,7 +12,10 @@ os_blueprint = Blueprint(
 @os_blueprint.route('/operatingsystems/', methods=['GET', ])
 def index():
     oses = OperatingSystem.query.order_by(
-        OperatingSystem.name.desc(), OperatingSystem.major_version.desc())
+        OperatingSystem.name.desc(),
+        OperatingSystem.major_version.desc(),
+        OperatingSystem.minor_version.desc(),
+    )
     return render_template('operatingsystems.html', oses=oses)
 
 
@@ -22,8 +25,13 @@ def operatingsystem(id):
     if operatingsystem is None:
         abort(404)
     test_runs = TestRun.query.join(
-        OperatingSystem).filter_by(id=operatingsystem.id).order_by(
-            TestRun.timestamp.desc(), OperatingSystem.major_version.desc())
+        OperatingSystem
+    ).filter_by(
+        id=operatingsystem.id
+    ).order_by(
+            TestRun.timestamp.desc(),
+            TestRun.name.desc(),
+            OperatingSystem.major_version.desc())
 
     return render_template(
         'operatingsystem.html',
