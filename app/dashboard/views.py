@@ -36,7 +36,9 @@ def index():
         func.avg(TestRun.failed).label('failed'),
         func.avg(TestRun.skipped).label('skipped'),
     ).group_by(
-        TestRun.name).order_by(
+        TestRun.release_id,
+        TestRun.name
+    ).order_by(
             TestRun.timestamp.desc(),
             TestRun.name.desc(),
         ).limit(items)
