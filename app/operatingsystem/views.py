@@ -1,4 +1,5 @@
-from app.models import OperatingSystem, TestRun
+from app.helpers import get_test_runs
+from app.models import OperatingSystem
 from flask import abort, render_template
 from flask import Blueprint
 
@@ -21,21 +22,15 @@ def index():
 
 @os_blueprint.route('/operatingsystems/<int:id>', methods=['GET', ])
 def operatingsystem(id):
-    operatingsystem = OperatingSystem.query.filter_by(id=id).first()
+    operating_system = OperatingSystem.query.filter_by(id=id).first()
     if operatingsystem is None:
         abort(404)
-    test_runs = TestRun.query.join(
-        OperatingSystem
-    ).filter_by(
-        id=operatingsystem.id
-    ).order_by(
-            TestRun.timestamp.desc(),
-            TestRun.name.desc(),
-            OperatingSystem.major_version.desc())
+
+    test_runs = get_test_runs(op_system=operating_system)
 
     return render_template(
         'operatingsystem.html',
-        name=operatingsystem.fullname(),
+        name=operating_system.fullname(),
         runs=test_runs
     )
 

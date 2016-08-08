@@ -1,4 +1,5 @@
-from app.models import OperatingSystem, Release, TestRun
+from app.helpers import get_test_runs
+from app.models import Release
 from flask import render_template
 from flask import Blueprint
 
@@ -18,11 +19,6 @@ def index():
 @release_blueprint.route('/releases/<int:id>', methods=['GET', ])
 def release(id):
     release = Release.query.filter_by(id=id).first()
-    test_runs = TestRun.query.filter_by(
-        release=release
-    ).join(OperatingSystem).filter().order_by(
-        TestRun.timestamp.desc(),
-        TestRun.name.desc(),
-        OperatingSystem.major_version.desc()
-    )
+    test_runs = get_test_runs(release=release)
+
     return render_template('release.html', release=release, rows=test_runs)

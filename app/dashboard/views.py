@@ -1,5 +1,6 @@
 from app.db import db
-from app.models import OperatingSystem, TestRun
+from app.helpers import get_test_runs
+from app.models import TestRun
 from flask import render_template, request
 from flask import Blueprint
 from sqlalchemy.sql.functions import func
@@ -17,15 +18,16 @@ dashboard_blueprint = Blueprint(
 def index():
     # How many items?
     items = request.args.get('items', 10)
-    test_runs = TestRun.query.filter_by(waved=False).join(
-        OperatingSystem).filter().order_by(
-            TestRun.timestamp.desc(),
-            TestRun.name.desc(),
-            OperatingSystem.major_version.desc()
-        ).limit(items)
+
+    test_runs = get_test_runs(items=items)
     rows = []
     for row in test_runs:
-        rows.append([row.name, row.passed, row.failed, row.skipped])
+        rows.append([
+            row.operatingsystem.fullname(),
+            row.passed,
+            row.failed,
+            row.skipped
+        ])
 
     rows.reverse()
 
