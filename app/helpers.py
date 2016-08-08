@@ -11,17 +11,25 @@ def operating_systems():
     ).all()
 
 
-def get_test_runs(operating_system=None, waved=False, items=10):
+def get_test_runs(items=None, op_system=None, release=None, waved=False):
     """Returns a list of `Test Runs` for a given `OperatingSystem`."""
     runs = TestRun.query.filter_by(
-        waved=waved).join(
+        waved=waved)
+
+    if op_system:
+        runs = runs.filter_by(operatingsystem=op_system)
+
+    if release:
+        runs = runs.filter_by(release=release)
+
+    runs = runs.join(
             OperatingSystem).filter().order_by(
                 TestRun.timestamp.desc(),
                 TestRun.name.desc(),
                 OperatingSystem.major_version.desc()
             )
 
-    if operating_system:
-        runs = runs.filter_by(operatingsystem=operating_system)
+    if items:
+        runs = runs.limit(items)
 
-    return runs.limit(items)
+    return runs
