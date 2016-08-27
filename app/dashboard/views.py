@@ -1,11 +1,6 @@
-from app.db import db
-from app.helpers import get_test_runs
-from app.models import TestRun
+from app.helpers import format_for_table, get_test_runs
 from flask import render_template, request
 from flask import Blueprint
-from sqlalchemy.sql.functions import func
-
-import json
 
 
 dashboard_blueprint = Blueprint(
@@ -19,40 +14,14 @@ def index():
     # How many items?
     items = request.args.get('items', 10)
 
-    test_runs = get_test_runs(items=items)
-    rows = []
-    for row in test_runs:
-        rows.append([
-            row.operatingsystem.fullname(),
-            row.passed,
-            row.failed,
-            row.skipped
-        ])
-
-    rows.reverse()
-
-    # Average numbers
-    avg_rows = db.session.query(
-        TestRun.name,
-        func.avg(TestRun.passed).label('passed'),
-        func.avg(TestRun.failed).label('failed'),
-        func.avg(TestRun.skipped).label('skipped'),
-    ).group_by(
-        TestRun.release_id,
-        TestRun.name
-    ).order_by(
-            TestRun.timestamp.desc(),
-            TestRun.name.desc(),
-        ).limit(items)
-    avg_data = []
-    for row in avg_rows:
-        avg_data.append([row.name, row.passed, row.failed, row.skipped])
-    avg_data.reverse()
+    fields = ['timestamp', 'total']
+    # TODO: Get the averaged data grouped by timestamp
+    test_runs = get_test_runs(items)
+    rows = format_for_table(test_runs, fields)
 
     return render_template(
         'index.html',
-        avg_data=json.dumps(avg_data),
-        data=json.dumps(rows),
+        data=rows,
         test_runs=test_runs,
     )
 

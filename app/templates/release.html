@@ -4,10 +4,33 @@
 {% block page_content %}
 {{ macros.load_chart() }}
 
-<div>
-  <div>
-    <h1>{{ release.name }}</h1>
-    {{ macros.testrun_table(rows, 1) }}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 chart-fix">
+      <h4>Test Runs</h4>
+      <ul class="nav nav-pills">
+        <li class="active"><a data-toggle="pill" href="#testcases" class="small">Test Cases</a></li>
+        <li><a data-toggle="pill" href="#passfail" class="small">Pass/Fail Rate</a></li>
+        <li><a data-toggle="pill" href="#execution" class="small">Execution</a></li>
+      </ul>
+      <div class="tab-content">
+        <div id="testcases" class="tab-pane fade in active">
+          {{ macros.chart('testcases', '# Automated Tests', 'bar', testcase) }}
+        </div>
+        <div id="passfail" class="tab-pane fade active">
+          {{ macros.chart('passfail', 'Percentage', 'bar', passfail) }}
+        </div>
+        <div id="execution" class="tab-pane fade active">
+          {{ macros.chart('execution', 'Percentage', 'bar', execution) }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h4>{{ release.name }}</h4>
+      {{ macros.testrun_table(rows, 1) }}
+    </div>
   </div>
 </div>
 

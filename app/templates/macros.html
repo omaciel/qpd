@@ -10,46 +10,95 @@ google.charts.load('current', {packages: ['corechart', 'line']});
 
 {% endmacro %}
 
-{% macro chart(id, type, rows) %}
+{% macro add_automated_column() %}
+data.addColumn('string', 'Date');
+data.addColumn('number', 'Automated');
+{% endmacro %}
+
+
+{% macro add_testcase_column() %}
+data.addColumn('string', 'X');
+data.addColumn('number', 'Passed');
+data.addColumn('number', 'Failed');
+data.addColumn('number', 'Skipped');
+data.addColumn('number', 'Error');
+{% endmacro %}
+
+
+{% macro add_pass_fail_column() %}
+data.addColumn('string', 'X');
+data.addColumn('number', '% Passed');
+data.addColumn('number', '% Failed');
+{% endmacro %}
+
+
+{% macro add_execution_column() %}
+data.addColumn('string', 'X');
+data.addColumn('number', '% Executed');
+data.addColumn('number', '% Not Executed');
+{% endmacro %}
+
+
+{% macro chart(id, ytitle, chart, rows) %}
 <div id="{{ id }}"></div>
 <script type='text/javascript'>//<![CDATA[
 google.charts.setOnLoadCallback(drawLineColors);
 function drawLineColors() {
       var data = new google.visualization.DataTable();
-      data.addColumn('string', 'X');
-      data.addColumn('number', 'Passed');
-      data.addColumn('number', 'Failed');
-      data.addColumn('number', 'Skipped');
+
+      if('{{ id }}' == 'testcases'){
+        {{ add_testcase_column() }}
+      }
+      else if('{{ id }}' == 'execution'){
+        {{ add_execution_column() }}
+      }
+      else if('{{ id }}' == 'passfail'){
+        {{ add_pass_fail_column() }}
+      }
+      else if('{{ id }}' == 'automated'){
+        {{ add_automated_column() }}
+      }
 
       data.addRows({{ rows|safe }});
 
-var options = {
+      var options = {
         title: 'Automation Results',
-        isStacked: true,
         height: 450,
         hAxis: {
           title: 'Build'
         },
         vAxis: {
-          title: '# Automated Tests'
+          title: '{{ ytitle }}'
         },
-        colors: ['#5cb85c', '#d9534f', '#337ab7'],
+        colors: ['#5cb85c', '#f1b259', '#337ab7', '#d9534f'],
         explorer: {
           maxZoomIn: 0.05,
           zoomDelta: 1.2,
         },
       };
 
-      if('{{ type }}' == 'line'){
+
+      if('{{ chart }}' == 'line'){
         var chart = new google.visualization.LineChart(
           document.getElementById('{{ id }}')
         );
       }
-      else{
+      else if('{{ chart }}' == 'area'){
+        var chart = new google.visualization.AreaChart(
+          document.getElementById('{{ id }}')
+        );
+      }
+      else if('{{ chart }}' == 'pie'){
+        var chart = new google.visualization.PieChart(
+          document.getElementById('{{ id }}')
+        );
+        var options = {title: 'Automation Results',};
+      }
+      else if('{{ chart }}' == 'bar'){
         var chart = new google.visualization.ColumnChart(
           document.getElementById('{{ id }}')
         );
-
+        options["isStacked"] = 'absolute';
       }
       chart.draw(data, options);
     }
@@ -60,8 +109,9 @@ var options = {
 {% endmacro %}
 
 
+
 {% macro run_cell(value, hl) %}
-    <td{% if hl %} class="success"{% endif %}>{{ value }}</td>
+    <td{% if hl %} class="success"{% endif %}>{{ '%0.2f' % value|float }}</td>
 {% endmacro %}
 
 
@@ -82,6 +132,7 @@ var options = {
       <th>Total</th>
       <th>Total Executed</th>
       {% endif %}
+      <th>PQI</th>
       <th>% Passed</th>
       <th>% Failed</th>
       <th>% Executed</th>
@@ -104,10 +155,11 @@ var options = {
       <td>{{ run.total }}</td>
       <td>{{ run.total_executed }}</td>
       {% endif %}
-      {{ run_cell(run.percent_passed|round(2), run.percent_passed >= 90) }}
-      <td>{{ run.percent_failed|round(2) }}</td>
-      <td>{{ run.percent_executed|round(2) }}</td>
-      <td>{{ run.percent_not_executed|round(2) }}</td>
+      {{ run_cell(run.passed/run.total, run.percent_passed >= 0.90) }}
+      <td>{{ '%0.2f' % run.percent_passed|float }}</td>
+      <td>{{ '%0.2f' % run.percent_failed|float }}</td>
+      <td>{{ '%0.2f' % run.percent_executed|float }}</td>
+      <td>{{ '%0.2f' % run.percent_not_executed|float }}</td>
     </tr>
     {% endfor %}
   </tbody>
