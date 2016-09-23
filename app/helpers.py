@@ -1,5 +1,5 @@
 from app.db import db
-from app.models import OperatingSystem, TestRun
+from app.models import OperatingSystem, Release, TestRun
 from sqlalchemy.sql.functions import func
 
 import datetime
@@ -19,11 +19,6 @@ def operating_systems():
 def format_for_table(items, fields, reverse=True):
 
     data = []
-
-    # for item in items:
-    #     data.append([
-    #         getattr(item, field, 0)
-    #         for field in fields])
 
     for item in items:
         row = []
@@ -83,9 +78,10 @@ def get_test_runs(items=None, op_system=None, release=None, waved=False):
         runs = runs.filter_by(release=release)
 
     runs = runs.join(
-            OperatingSystem).filter().order_by(
+            OperatingSystem, Release).filter().order_by(
                 TestRun.timestamp.desc(),
                 TestRun.name.desc(),
+                Release.name.desc(),
                 OperatingSystem.major_version.desc()
             )
 
