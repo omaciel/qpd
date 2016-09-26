@@ -207,7 +207,11 @@ function drawLineColors() {
       <td>{{ run.total }}</td>
       <td>{{ run.total_executed }}</td>
       {% endif %}
-      {{ run_cell(run.passed/run.total, run.percent_passed >= 0.90) }}
+      {% if run.total > 0 %}
+          {{ run_cell(run.passed/run.total, run.percent_passed >= 0.90) }}
+      {% else %}
+          {{ run_cell(0, false)}}
+      {% endif %}
       <td>{{ '%0.2f' % run.percent_passed|float }}</td>
       <td>{{ '%0.2f' % run.percent_failed|float }}</td>
       <td>{{ '%0.2f' % run.percent_executed|float }}</td>
