@@ -1,5 +1,5 @@
 from app.db import db
-from app.models import OperatingSystem, Release, TestRun
+from app.models import OperatingSystem, Release, TestRun, Role, User
 from sqlalchemy.sql.functions import func
 
 import datetime
@@ -89,3 +89,37 @@ def get_test_runs(items=None, op_system=None, release=None, waved=False):
         runs = runs.limit(items)
 
     return runs
+
+
+def get_or_create(model, **kwargs):
+    """SQLAlchemy helper to get_or_create an object"""
+    instance = db.session.query(model).filter_by(**kwargs).first()
+    if instance:
+        return instance, False
+    else:
+        instance = model(**kwargs)
+        db.session.add(instance)
+        return instance, True
+
+
+def create_user(
+        name=None, email=None,
+        password=None, role=None, app=None):
+    "Create a user"
+
+    role, created = get_or_create(Role, name=role)
+
+    with app.app_context():
+        if all([name, email, password]):
+            user = User(
+                first_name=name,
+                roles=[role],
+                active=True,
+                email=email
+            )
+            user.set_password(password)
+            db.session.add(user)
+        else:
+            user = "Cant create the user"
+        db.session.commit()
+        print(user)

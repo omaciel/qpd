@@ -4,6 +4,7 @@ import logging
 import click
 from app import create_app, models, views, admin
 from app.db import db
+from app.helpers import create_user
 
 app = create_app()
 
@@ -81,6 +82,17 @@ def showconfig():
 def run(reloader, debug, host, port):
     """Run the Flask development server i.e. app.run()"""
     app.run(use_reloader=reloader, debug=debug, host=host, port=port)
+
+
+@core_cmd.command()
+@click.option('--name', help='Full name', prompt=True)
+@click.option('--email', help='A valid email address', prompt=True)
+@click.option('--password', prompt=True, hide_input=True,
+              confirmation_prompt=True)
+def createsuperuser(name, email, password):
+    """Create a user with administrator permissions"""
+    create_user(name, email, password, 'admin', app=app)
+
 
 help_text = """
     QPD Interactive shell!
