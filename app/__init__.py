@@ -2,8 +2,10 @@ import os
 
 from flask import Flask
 from flask_bootstrap import Bootstrap
+from flask_security import Security, SQLAlchemyUserDatastore
 from app.admin import configure_admin
 from app.db import db
+from app.models import User, Role
 
 # initialize extensions
 bootstrap = Bootstrap()
@@ -24,6 +26,10 @@ def create_app():
     # initialize extensions
     bootstrap.init_app(app)
     db.init_app(app)
+
+    # security
+    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+    app.security = Security(app, user_datastore)
 
     # import blueprints
     from app.dashboard.views import dashboard_blueprint

@@ -3,3 +3,4 @@ Flask-Admin
 Flask-Bootstrap
 Flask-SQLAlchemy
 Flask-WTF
+Flask-Security>=1.7.5
