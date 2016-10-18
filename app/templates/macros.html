@@ -171,9 +171,8 @@ function drawLineColors() {
 <table class="table table-hover table-condensed">
   <thead>
     <tr>
-      <th>Date</th>
-      <th>Project</th>
       <th>Release</th>
+      <th>Date</th>
       <th>Build</th>
       <th>OS</th>
       {% if all %}
@@ -194,11 +193,16 @@ function drawLineColors() {
   <tbody>
     {% for run in test_runs %}
     <tr>
+      <td>
+        <a href="{{ url_for('release.release', id=run.release.id)
+           }}">{{ run.release.name }}</a>
+      </td>
       <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
-      <td>{{ run.project.name }}</td>
-      <td>{{ run.release.name }}</td>
       <td>{{ run.name }}</td>
-      <td>{{ run.operatingsystem.fullname() }}</td>
+      <td>
+        <a href="{{ url_for('operatingsystem.operatingsystem', id=run.operatingsystem.id)  }}">
+          {{ run.operatingsystem.fullname() }}</a>
+      </td>
       {% if all %}
       <td>{{ run.passed }}</td>
       <td>{{ run.failed }}</td>

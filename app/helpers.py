@@ -66,6 +66,31 @@ def get_average_test_runs(items=None, release=None):
     return avg_runs
 
 
+def get_latest_test_runs():
+    testruns = []
+
+    # All releases
+    releases = Release.query.order_by(Release.name.desc()).all()
+
+    for release in releases:
+        # Fetch unique operating systems tested in a release
+        oses = set(
+            testrun.operatingsystem
+            for testrun
+            in TestRun.query.filter_by(release=release).all())
+        # Get latest test run result for each operating system
+        for operatingsystem in oses:
+            testruns.append(
+                TestRun.query.filter_by(
+                    release=release,
+                    operatingsystem=operatingsystem
+                ).order_by(
+                    TestRun.timestamp.desc()
+                ).first())
+
+    return testruns
+
+
 def get_test_runs(items=None, op_system=None, release=None, waved=False):
     """Returns a list of `Test Runs` for a given `OperatingSystem`."""
     runs = TestRun.query.filter_by(

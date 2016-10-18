@@ -1,5 +1,5 @@
-from app.helpers import format_for_table, get_test_runs
-from flask import render_template, request
+from app.helpers import get_latest_test_runs
+from flask import render_template
 from flask import Blueprint
 
 
@@ -11,17 +11,10 @@ dashboard_blueprint = Blueprint(
 
 @dashboard_blueprint.route('/', methods=['GET', ])
 def index():
-    # How many items?
-    items = request.args.get('items', 10)
-
-    fields = ['timestamp', 'total']
-    # TODO: Get the averaged data grouped by timestamp
-    test_runs = get_test_runs(items)
-    rows = format_for_table(test_runs, fields)
+    test_runs = get_latest_test_runs()
 
     return render_template(
         'index.html',
-        data=rows,
         test_runs=test_runs,
     )
 
