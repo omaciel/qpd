@@ -1,59 +1,8 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros %}
 
 {% block page_content %}
-    <h1>Releases</h1>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Release</th>
-          <th>Date</th>
-          <th>Build</th>
-          <th>OS</th>
-          <th>Passed</th>
-          <th>Failed</th>
-          <th>Skipped</th>
-          <th>Error</th>
-          <th>Total</th>
-          <th>Total Executed</th>
-          <th>PQI</th>
-          <th>% Passed</th>
-          <th>% Failed</th>
-          <th>% Executed</th>
-          <th>% Not Executed</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for run in test_runs %}
-        <tr>
-          <td>
-            <a href="{{ url_for('release.release', id=run.release.id)  }}">
-              {{ run.release.name }}
-            </a>
-          </td>
-          <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
-          <td>{{ run.name }}</td>
-          <td>
-            <a href="{{ url_for('operatingsystem.operatingsystem', id=run.operatingsystem.id)  }}">
-              {{ run.operatingsystem.fullname() }}</a>
-          </td>
-          <td>{{ run.passed }}</td>
-          <td>{{ run.failed }}</td>
-          <td>{{ run.skipped }}</td>
-          <td>{{ run.error }}</td>
-          <td>{{ run.total }}</td>
-          <td>{{ run.total_executed }}</td>
-          {% if run.total > 0 %}
-          <td>{{ '%0.2f' % (run.passed/run.total)|float }}</td>
-          {% else %}
-          <td>{{ 0 }}</td>
-          {% endif %}
-          <td>{{ '%0.2f' % run.percent_passed|float }}</td>
-          <td>{{ '%0.2f' % run.percent_failed|float }}</td>
-          <td>{{ '%0.2f' % run.percent_executed|float }}</td>
-          <td>{{ '%0.2f' % run.percent_not_executed|float }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<h1>Releases</h1>
+{{ macros.testrun_table(test_runs, 1) }}
 
-    {% endblock %}
+{% endblock %}
