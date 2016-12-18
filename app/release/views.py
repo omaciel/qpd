@@ -1,5 +1,5 @@
 from app.helpers import format_for_table, get_average_test_runs, get_test_runs
-from app.models import Release
+from app.models import Release, TestRun
 from flask import render_template
 from flask import Blueprint
 
@@ -13,10 +13,26 @@ release_blueprint = Blueprint(
 @release_blueprint.route('/releases/', methods=['GET', ])
 def index():
     releases = Release.query.order_by(Release.name.desc())
-    return render_template('releases.html', rows=releases)
+    releases = [".".join(release.name.split('.')[:2]) for release in releases]
+    xy_releases = sorted(set(releases), reverse=True)
+    return render_template('releases.html', rows=xy_releases)
 
 
-@release_blueprint.route('/releases/<int:id>', methods=['GET', ])
+@release_blueprint.route('/releases/<major>', methods=['GET', ])
+def major(major):
+    runs_by_release = TestRun.query.join(
+        TestRun.release
+    ).filter(
+        Release.name.startswith(major)
+    ).order_by(
+        Release.name.desc(),
+        TestRun.name.desc()
+    )
+
+    return render_template('major_releases.html', test_runs=runs_by_release)
+
+
+@release_blueprint.route('/release/<int:id>', methods=['GET', ])
 def release(id):
     release = Release.query.filter_by(id=id).first()
     tc_fields = [
