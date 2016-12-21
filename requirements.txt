@@ -1,3 +1,4 @@
+alembic
 Flask
 Flask-Admin
 Flask-Bootstrap

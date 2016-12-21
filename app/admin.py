@@ -7,6 +7,7 @@ from flask_admin import Admin
 from flask_security import current_user
 from app.models import OperatingSystem, Project, Release, TestRun, User, Role
 
+
 admin = Admin(
     name='QPD',
     template_mode='bootstrap3',
@@ -41,7 +42,15 @@ class BaseView(ModelView):
 
 
 class ReleaseView(BaseView):
-    column_default_sort = ('name', True)
+    column_editable_list = ['major', 'minor', 'patch']
+    column_default_sort = ('minor', True)
+    column_exclude_list = ('name', )
+    column_sortable_list = ('major', 'minor', 'patch')
+    form_excluded_columns = ['name', 'testruns']
+
+    def after_model_change(self, form, model, is_created):
+        model.update_name()
+        self.session.commit()
 
 
 class TestRunView(BaseView):

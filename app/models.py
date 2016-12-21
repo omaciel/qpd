@@ -44,9 +44,17 @@ class Release(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), index=True, unique=True)
+    major = db.Column(db.Integer, index=True, unique=True)
+    minor = db.Column(db.Integer, index=True, unique=True)
+    patch = db.Column(db.Integer, index=True, unique=True)
 
     def __repr__(self):
-        return '<Release {0}>'.format(self.name)
+        return '<Release {0}.{1}.{2}>'.format(
+            self.major, self.minor, self.patch)
+
+    def update_name(self):
+        self.name = "{0}.{1}.{2}".format(
+            self.major, self.minor, self.patch)
 
 
 class TestCase(db.Model):
