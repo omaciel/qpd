@@ -5,6 +5,7 @@
 
     <table class="table table-hover">
         <tr>
+            <th>Release</th>
             <th>Build</th>
             <th>Date</th>
             <th>Operating System</th>
@@ -22,6 +23,7 @@
         <tbody>
           {% for run in runs %}
           <tr>
+            <td>{{ run.release.name }}</td>
             <td>{{ run.name }}</td>
             <td>{{ run.timestamp.strftime('%Y-%m-%d') }}</td>
             <td>{{ run.operatingsystem.name }} {{ run.operatingsystem.major_version }}.{{ run.operatingsystem.minor_version }}</td>
