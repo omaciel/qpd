@@ -10,8 +10,8 @@
         {% for row in rows %}
         <tr>
           <td>
-            <a href="{{ url_for('release.major', major=row)  }}">
-              {{ row }}
+            <a href="{{ url_for('release.minor', minor=row.minor)  }}">
+              {{ row.major }}.{{ row.minor }}
             </a>
           </td>
         </tr>

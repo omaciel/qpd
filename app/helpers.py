@@ -68,20 +68,17 @@ def get_average_test_runs(items=None, release=None):
 
 def get_last_test_run_per_release(release):
     """Return list of latest test run per release."""
-    last_run = db.session.query(
-        TestRun.name,
-        func.max(TestRun.operatingsystem)
-    ).filter_by(
+    last_run = TestRun.query.filter_by(
         release=release
     ).group_by(
-        TestRun.name
+        TestRun.timestamp
     ).order_by(
         TestRun.timestamp.desc()
     ).first()
 
     return TestRun.query.filter_by(
         release=release,
-        name=last_run.name
+        timestamp=last_run.timestamp,
     ).join(
         OperatingSystem
     ).order_by(
@@ -132,7 +129,6 @@ def get_test_runs(items=None, op_system=None, release=None, waved=False):
     runs = runs.join(
             OperatingSystem, Release).filter().order_by(
                 TestRun.timestamp.desc(),
-                TestRun.name.desc(),
                 Release.major.desc(),
                 Release.minor.desc(),
                 Release.patch.desc(),

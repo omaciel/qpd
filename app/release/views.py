@@ -1,5 +1,11 @@
-from app.helpers import format_for_table, get_average_test_runs, get_latest_releases,  get_test_runs
-from app.models import Release, TestRun
+from app.helpers import (
+    format_for_table,
+    get_average_test_runs,
+    get_last_test_run_per_release,
+    get_latest_releases,
+    get_test_runs
+)
+from app.models import Release
 from flask import render_template
 from flask import Blueprint
 
@@ -12,25 +18,26 @@ release_blueprint = Blueprint(
 
 @release_blueprint.route('/releases/', methods=['GET', ])
 def index():
-    # releases = Release.query.order_by(Release.name.desc())
-    # releases = [".".join(release.name.split('.')[:2]) for release in releases]
-    releases = ["{0}.{1}".format(release.major, release.minor) for release in get_latest_releases()]
-    # xy_releases = sorted(set(releases), reverse=True)
+    releases = get_latest_releases()
     return render_template('releases.html', rows=releases)
 
 
-@release_blueprint.route('/releases/<major>', methods=['GET', ])
-def major(major):
-    runs_by_release = TestRun.query.join(
-        TestRun.release
-    ).filter(
-        Release.name.startswith(major)
-    ).order_by(
-        Release.name.desc(),
-        TestRun.name.desc()
-    )
+@release_blueprint.route('/releases/<minor>', methods=['GET', ])
+def minor(minor):
+    dataset = []
 
-    return render_template('major_releases.html', test_runs=runs_by_release)
+    releases = Release.query.filter_by(
+        minor=minor
+    ).order_by(
+        Release.patch.desc(),
+    ).all()
+
+    for release in releases:
+        test_runs = get_last_test_run_per_release(release)
+        for test_run in test_runs:
+            dataset.append(test_run)
+
+    return render_template('minor_releases.html', test_runs=dataset)
 
 
 @release_blueprint.route('/release/<int:id>', methods=['GET', ])
