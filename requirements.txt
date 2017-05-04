@@ -1,7 +1,3 @@
-alembic
-Flask
-Flask-Admin
-Flask-Bootstrap
-Flask-SQLAlchemy
-Flask-WTF
-Flask-Security>=1.7.5
+Django
+djangorestframework
+pytest-django
