@@ -50,3 +50,55 @@ class Release(models.Model):
     def __unicode__(self):
         return str('{}.{}.{}'.format(
             self.major, self.minor, self.patch))
+
+
+class TestRun(models.Model):
+    """Represents a Test Run for a product release."""
+    name = models.CharField(max_length=255)
+    updated_on = models.DateTimeField(auto_now=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    waved = models.BooleanField(default=False)
+    # Foreign keys
+    operating_system = models.ForeignKey(
+        OperatingSystem, on_delete=models.CASCADE)
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE)
+    release = models.ForeignKey(
+        Release, on_delete=models.CASCADE)
+
+    passed = models.IntegerField()
+    failed = models.IntegerField()
+    skipped = models.IntegerField()
+    error = models.IntegerField()
+    total = models.IntegerField(null=True, blank=True)
+    total_executed = models.IntegerField(null=True, blank=True)
+    percent_passed = models.FloatField(null=True, blank=True)
+    percent_failed = models.FloatField(null=True, blank=True)
+    percent_executed = models.FloatField(null=True, blank=True)
+    percent_not_executed = models.FloatField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.total = sum([self.passed, self.failed, self.skipped, self.error])
+        self.total_executed = sum([self.passed, self.failed])
+        self.percent_passed = (
+            (self.passed / float(self.total_executed)) * 100
+            if self.total_executed > 0
+            else 0)
+        self.percent_failed = (
+            (self.failed / float(self.total_executed)) * 100
+            if self.total_executed > 0
+            else 0)
+        self.percent_executed = (
+            (self.total_executed / float(self.total)) * 100
+            if self.total > 0
+            else 0)
+        self.percent_not_executed = (
+            (self.skipped / float(self.total)) * 100 if self.total > 0 else 0)
+        super(TestRun, self).save(args, kwargs)
+
+    def __str__(self):
+        return str('{}'.format(self.name))
+
+    def __unicode__(self):
+        return str('{}'.format(self.name))
