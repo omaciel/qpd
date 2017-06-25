@@ -1,57 +1,53 @@
 from django.conf.urls import url
 from dashboard.views import (
     api_root,
-    get_delete_update_operating_system,
-    get_post_operating_systems,
-    get_delete_update_product,
-    get_post_products,
-    get_delete_update_release,
-    get_post_releases,
-    get_delete_update_testrun,
-    get_post_testruns,
+    OperatingSystemDetail,
+    OperatingSystemList,
+    ProductDetail,
+    ProductList,
+    ReleaseDetail,
+    ReleaseList,
+    TestRunDetail,
+    TestRunList,
     )
 
 
 urlpatterns = [
     url(r'^api/$', api_root, name='api_root'),
-    url(
-        r'^api/v1/operating_systems/(?P<pk>[0-9]+)$',
-        get_delete_update_operating_system,
-        name='get_delete_update_operating_system'
-    ),
+    # Operating System
     url(
         r'^api/v1/operating_systems/$',
-        get_post_operating_systems,
-        name='get_post_operating_systems'
-    ),
+        OperatingSystemList.as_view(),
+        name='operating_system_list'),
     url(
-        r'^api/v1/products/(?P<pk>[0-9]+)$',
-        get_delete_update_product,
-        name='get_delete_update_product'
-    ),
+        r'^api/v1/operating_systems/(?P<pk>[0-9]+)/$',
+        OperatingSystemDetail.as_view(),
+        name='operating_system_detail'),
+    # Product
     url(
         r'^api/v1/products/$',
-        get_post_products,
-        name='get_post_products'
-    ),
+        ProductList.as_view(),
+        name='product_list'),
     url(
-        r'^api/v1/releases/(?P<pk>[0-9]+)$',
-        get_delete_update_release,
-        name='get_delete_update_release'
-    ),
+        r'^api/v1/products/(?P<pk>[0-9]+)/$',
+        ProductDetail.as_view(),
+        name='product_detail'),
+    # Release
     url(
         r'^api/v1/releases/$',
-        get_post_releases,
-        name='get_post_releases'
-    ),
+        ReleaseList.as_view(),
+        name='release_list'),
     url(
-        r'^api/v1/testruns/(?P<pk>[0-9]+)$',
-        get_delete_update_testrun,
-        name='get_delete_update_testrun'
-    ),
+        r'^api/v1/releases/(?P<pk>[0-9]+)/$',
+        ReleaseDetail.as_view(),
+        name='release_detail'),
+    # TestRun
     url(
         r'^api/v1/testruns/$',
-        get_post_testruns,
-        name='get_post_testruns'
-    ),
+        TestRunList.as_view(),
+        name='testrun_list'),
+    url(
+        r'^api/v1/testruns/(?P<pk>[0-9]+)/$',
+        TestRunDetail.as_view(),
+        name='testrun_detail'),
 ]

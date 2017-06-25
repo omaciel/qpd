@@ -1,6 +1,9 @@
 """Models for the QPD application."""
 from django.db import models
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 class OperatingSystem(models.Model):
     """Represents an Operating System."""
@@ -70,15 +73,16 @@ class TestRun(models.Model):
     failed = models.IntegerField()
     skipped = models.IntegerField()
     error = models.IntegerField()
-    total = models.IntegerField(null=True, blank=True)
-    total_executed = models.IntegerField(null=True, blank=True)
-    percent_passed = models.FloatField(null=True, blank=True)
-    percent_failed = models.FloatField(null=True, blank=True)
-    percent_executed = models.FloatField(null=True, blank=True)
-    percent_not_executed = models.FloatField(null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
 
-    def save(self, *args, **kwargs):
+    def __str__(self):
+        return str('{}'.format(self.name))
+
+    def __unicode__(self):
+        return str('{}'.format(self.name))
+
+    def update_testrun_stats(self):
+
         self.total = sum([self.passed, self.failed, self.skipped, self.error])
         self.total_executed = sum([self.passed, self.failed])
         self.percent_passed = (
@@ -95,10 +99,3 @@ class TestRun(models.Model):
             else 0)
         self.percent_not_executed = (
             (self.skipped / float(self.total)) * 100 if self.total > 0 else 0)
-        super(TestRun, self).save(args, kwargs)
-
-    def __str__(self):
-        return str('{}'.format(self.name))
-
-    def __unicode__(self):
-        return str('{}'.format(self.name))

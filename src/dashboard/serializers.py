@@ -31,30 +31,87 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
 class TestRunSerializer(serializers.ModelSerializer):
     """Provide serialization for TestRun model."""
-    operating_system = serializers.PrimaryKeyRelatedField(queryset=OperatingSystem.objects.all())
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    release = serializers.PrimaryKeyRelatedField(queryset=Release.objects.all())
+    operating_system = serializers.PrimaryKeyRelatedField(
+        queryset=OperatingSystem.objects.all())
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all())
+    release = serializers.PrimaryKeyRelatedField(
+        queryset=Release.objects.all())
+
+    # Additional fields
+    total = serializers.SerializerMethodField()
+    total_executed = serializers.SerializerMethodField()
+    percent_passed = serializers.SerializerMethodField()
+    percent_failed = serializers.SerializerMethodField()
+    percent_executed = serializers.SerializerMethodField()
+    percent_not_executed = serializers.SerializerMethodField()
+    pqi = serializers.SerializerMethodField()
+
+    def get_total(self, obj):
+        """Generic SUM method."""
+        return sum([obj.passed, obj.failed, obj.skipped, obj.error])
+
+    def get_total_executed(self, obj):
+        """Generic SUM method."""
+        return sum([obj.passed, obj.failed])
+
+    def get_percent_passed(self, obj):
+        """Generic SUM method."""
+        total_executed = self.get_total_executed(obj)
+        return (
+            (obj.passed / total_executed) * 100
+            if total_executed > 0
+            else 0)
+
+    def get_percent_failed(self, obj):
+        """Generic SUM method."""
+        total_executed = self.get_total_executed(obj)
+        return (
+            (obj.failed / total_executed) * 100
+            if total_executed > 0
+            else 0)
+
+    def get_percent_executed(self, obj):
+        """Generic SUM method."""
+        total = self.get_total(obj)
+        total_executed = self.get_total_executed(obj)
+        return (
+            (obj.failed / total_executed) * 100
+            if total > 0
+            else 0)
+
+    def get_percent_not_executed(self, obj):
+        """Generic SUM method."""
+        total = self.get_total(obj)
+        return (
+            (obj.skipped / total) * 100
+            if total > 0
+            else 0)
+
+    def get_pqi(self, obj):
+        """Generic SUM method."""
+        total = self.get_total(obj)
+        return obj.passed / total
 
     class Meta:
         model = TestRun
         fields = (
-            'created_on',
-            'error',
-            'failed',
             'id',
-            'notes',
-            'operating_system',
-            'passed',
-            'percent_executed',
-            'percent_failed',
-            'percent_not_executed',
-            'percent_passed',
+            'name',
             'product',
             'release',
+            'operating_system',
+            'waved',
+            'passed',
+            'failed',
             'skipped',
+            'error',
             'total',
             'total_executed',
-            'updated_on',
-            'waved',
-            'name',
+            'percent_passed',
+            'percent_failed',
+            'percent_executed',
+            'percent_not_executed',
+            'pqi',
+            'notes',
         )
